@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reporte – Torres de Hanoi V.1 &amp; V.2</title>
+  <style>
+    /* ── Reset y tipografía ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f7fc;
+      color: #1e2636;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── Portada ── */
+    .portada {
+      background: linear-gradient(135deg, #0f1c36 0%, #1a3a5c 60%, #1b6ca8 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 40px;
+      page-break-after: always;
+    }
+    .portada .badge {
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 6px 22px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .portada h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .portada h1 span { color: #5ce1e6; }
+    .portada .subtitulo {
+      font-size: 1.2rem;
+      color: #aad4f5;
+      margin-bottom: 48px;
+    }
+    .portada .meta {
+      background: rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 24px 44px;
+      display: inline-block;
+      text-align: left;
+    }
+    .portada .meta p { color: #d0e8ff; margin: 5px 0; font-size: 14px; }
+    .portada .meta p b { color: #fff; }
+    .torre-svg { margin-bottom: 38px; }
+
+    /* ── Contenido ── */
+    .contenido {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 50px 30px 80px;
+    }
+
+    /* ── Secciones ── */
+    .seccion {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.06);
+      padding: 36px 40px;
+      margin-bottom: 32px;
+    }
+    .seccion h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f4c81;
+      border-left: 5px solid #1b8ce8;
+      padding-left: 14px;
+      margin-bottom: 18px;
+    }
+    .seccion h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #194f82;
+      margin: 22px 0 8px;
+    }
+    .seccion p { margin-bottom: 12px; }
+    .seccion ul, .seccion ol {
+      padding-left: 24px;
+      margin-bottom: 12px;
+    }
+    .seccion li { margin-bottom: 6px; }
+
+    /* ── Código ── */
+    pre {
+      background: #0d1b2a;
+      color: #c9d1d9;
+      border-radius: 10px;
+      padding: 22px 26px;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.6;
+      margin: 16px 0;
+    }
+    .kw  { color: #ff7b72; }   /* keywords */
+    .ty  { color: #ffa657; }   /* types     */
+    .st  { color: #a5d6ff; }   /* strings   */
+    .cm  { color: #8b949e; }   /* comments  */
+    .fn  { color: #d2a8ff; }   /* functions */
+    .nb  { color: #79c0ff; }   /* numbers   */
+
+    /* ── Tabla ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    thead tr { background: #1b5fa8; color: #fff; }
+    thead th { padding: 11px 14px; text-align: left; }
+    tbody tr:nth-child(even) { background: #f0f5fc; }
+    tbody td { padding: 10px 14px; border-bottom: 1px solid #dce8f8; }
+
+    /* ── Callout / alerta ── */
+    .callout {
+      border-left: 5px solid #1b8ce8;
+      background: #eaf3ff;
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .callout.verde  { border-color: #1ba87e; background: #e6fff6; }
+    .callout.naranja{ border-color: #e87c1b; background: #fff4e6; }
+
+    /* ── Formula ── */
+    .formula {
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f4c81;
+      background: #eaf3ff;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 18px 0;
+      letter-spacing: 1px;
+    }
+
+    /* ── Diagrama torres ASCII ── */
+    .ascii {
+      background: #12243a;
+      color: #5ce1e6;
+      border-radius: 10px;
+      padding: 18px 28px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    /* ── Badge versión ── */
+    .vbadge {
+      display: inline-block;
+      border-radius: 50px;
+      padding: 3px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .v1 { background: #1b8ce8; color: #fff; }
+    .v2 { background: #1ba87e; color: #fff; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      color: #8a9bbf;
+      font-size: 13px;
+      padding: 30px 0;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; font-size: 13px; }
+      .portada { min-height: unset; padding: 40px; }
+      .contenido { padding: 20px; }
+      .seccion { box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════ PORTADA ════════════════════════════ -->
+<div class="portada">
+  <div class="torre-svg">
+    <svg width="120" height="90" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="82" width="110" height="8" rx="4" fill="#5ce1e6" opacity="0.6"/>
+      <!-- torre A -->
+      <rect x="23" y="20" width="8" height="62" rx="4" fill="#5ce1e6" opacity="0.8"/>
+      <rect x="6"  y="70" width="40" height="10" rx="5" fill="#ff7b72"/>
+      <rect x="12" y="60" width="28" height="10" rx="5" fill="#ffa657"/>
+      <rect x="18" y="50" width="16" height="10" rx="5" fill="#ffd670"/>
+      <!-- torre B -->
+      <rect x="56" y="20" width="8" height="62" rx="4" fill="#5ce1e6" opacity="0.8"/>
+      <!-- torre C -->
+      <rect x="89" y="20" width="8" height="62" rx="4" fill="#5ce1e6" opacity="0.8"/>
+    </svg>
+  </div>
+  <div class="badge">Programación – Estructuras Recursivas</div>
+  <h1>Torres de <span>Hanoi</span></h1>
+  <p class="subtitulo">V.1 (Consola) &nbsp;·&nbsp; V.2 (Interfaz Gráfica)</p>
+  <div class="meta">
+    <p><b>Nombre:</b> Iván Asdrúbal Villegas Espinosa</p>
+    <p><b>Carrera:</b> Ingeniería de Sistemas Computacionales</p>
+    <p><b>Materia:</b> Tópicos Selectos de Inteligencia Artificial</p>
+    <p><b>Asignatura:</b> Programación / Algoritmos y Estructuras de Datos</p>
+    <p><b>Lenguaje:</b> Java SE</p>
+    <p><b>Versiones:</b> V.1 – Consola &nbsp;|&nbsp; V.2 – Swing GUI</p>
+    <p><b>Fecha:</b> 16 de marzo de 2026</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════ CONTENIDO ════════════════════════════ -->
+<div class="contenido">
+
+  <!-- ── 1. Introducción ── -->
+  <div class="seccion">
+    <h2>1. Introducción</h2>
+    <p>
+      Las <b>Torres de Hanoi</b> es uno de los problemas clásicos de la informática y las matemáticas
+      recreativas, propuesto por el matemático francés <b>Édouard Lucas</b> en 1883. A pesar de su
+      sencilla descripción, ilustra de forma excepcional el poder y la elegancia de la
+      <b>recursividad</b> como técnica de resolución de problemas.
+    </p>
+    <p>
+      El problema consiste en mover una pila de <b>n</b> discos de diferente tamaño desde una torre
+      de origen hasta una torre de destino, utilizando una torre auxiliar y respetando únicamente dos
+      reglas: mover solo un disco a la vez y nunca colocar un disco más grande sobre uno más pequeño.
+    </p>
+    <div class="callout">
+      Este proyecto implementa la solución en dos versiones: <b>V.1</b> (línea de comandos, entrada
+      por teclado) y <b>V.2</b> (interfaz gráfica Swing con animación paso a paso).
+    </div>
+  </div>
+
+  <!-- ── 2. Objetivos ── -->
+  <div class="seccion">
+    <h2>2. Objetivos</h2>
+    <h3>Objetivo General</h3>
+    <p>
+      Implementar el algoritmo recursivo de las Torres de Hanoi en Java, demostrando su correctitud y
+      eficiencia, y presentarlo en dos versiones funcionales: consola e interfaz gráfica.
+    </p>
+    <h3>Objetivos Específicos</h3>
+    <ul>
+      <li>Comprender y aplicar el paradigma de programación recursiva.</li>
+      <li>Analizar la complejidad temporal y espacial del algoritmo.</li>
+      <li>Desarrollar una interfaz gráfica atractiva con Java Swing (V.2) que anime la solución.</li>
+      <li>Validar la solución con distintas cantidades de discos y verificar el contador de movimientos.</li>
+    </ul>
+  </div>
+
+  <!-- ── 3. Descripción del problema ── -->
+  <div class="seccion">
+    <h2>3. Descripción del Problema</h2>
+
+    <h3>3.1 Reglas</h3>
+    <ol>
+      <li>Solo se puede mover <b>un disco a la vez</b>.</li>
+      <li>Solo se puede mover el disco que esté en la <b>cima</b> de una torre.</li>
+      <li>Ningún disco puede colocarse sobre un disco <b>más pequeño</b>.</li>
+    </ol>
+
+    <h3>3.2 Torres</h3>
+    <p>El problema usa tres torres nombradas <b>A</b> (origen), <b>B</b> (auxiliar) y <b>C</b> (destino).</p>
+
+    <div class="ascii">
+Estado inicial (3 discos):
+  |          |          |
+ [1]         |          |
+ [2]         |          |
+[3  ]        |          |
+──────      ──────     ──────
+  A            B          C
+
+Estado final:
+  |          |          |
+  |          |         [1]
+  |          |         [2]
+  |          |        [3  ]
+──────      ──────     ──────
+  A            B          C
+    </div>
+  </div>
+
+  <!-- ── 4. Algoritmo ── -->
+  <div class="seccion">
+    <h2>4. Algoritmo Recursivo</h2>
+
+    <h3>4.1 Estrategia de división</h3>
+    <p>
+      La solución recursiva divide el problema en <b>tres pasos</b> que se aplican para cada nivel
+      de recurisión:
+    </p>
+    <ol>
+      <li>Mover los <b>n − 1</b> discos superiores de <b>origen</b> a <b>auxiliar</b>, usando <b>destino</b> como apoyo.</li>
+      <li>Mover el disco más grande (disco <b>n</b>) de <b>origen</b> a <b>destino</b>.</li>
+      <li>Mover los <b>n − 1</b> discos de <b>auxiliar</b> a <b>destino</b>, usando <b>origen</b> como apoyo.</li>
+    </ol>
+
+    <h3>4.2 Pseudocódigo</h3>
+    <pre>
+procedimiento hanoi(n, origen, destino, auxiliar):
+    <span class="kw">si</span> n == 1:
+        mover disco 1 de origen → destino
+        <span class="kw">retornar</span>
+    hanoi(n-1, origen, auxiliar, destino)   <span class="cm">// paso 1</span>
+    mover disco n de origen → destino       <span class="cm">// paso 2</span>
+    hanoi(n-1, auxiliar, destino, origen)   <span class="cm">// paso 3</span>
+    </pre>
+
+    <h3>4.3 Traza para n = 3</h3>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Disco</th><th>Desde</th><th>Hacia</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>1</td><td>A</td><td>C</td></tr>
+        <tr><td>2</td><td>2</td><td>A</td><td>B</td></tr>
+        <tr><td>3</td><td>1</td><td>C</td><td>B</td></tr>
+        <tr><td>4</td><td>3</td><td>A</td><td>C</td></tr>
+        <tr><td>5</td><td>1</td><td>B</td><td>A</td></tr>
+        <tr><td>6</td><td>2</td><td>B</td><td>C</td></tr>
+        <tr><td>7</td><td>1</td><td>A</td><td>C</td></tr>
+      </tbody>
+    </table>
+    <p>Total: <b>7 movimientos</b> (= 2³ − 1 = 7 ✓).</p>
+  </div>
+
+  <!-- ── 5. Análisis de complejidad ── -->
+  <div class="seccion">
+    <h2>5. Análisis de Complejidad</h2>
+
+    <h3>5.1 Número de movimientos</h3>
+    <p>
+      La recurrencia que describe el número de movimientos <b>T(n)</b> es:
+    </p>
+    <div class="formula">
+      T(n) = 2·T(n − 1) + 1 &nbsp;,&nbsp; T(1) = 1
+    </div>
+    <p>Cuya solución cerrada es:</p>
+    <div class="formula">T(n) = 2<sup>n</sup> − 1</div>
+
+    <h3>5.2 Tabla de crecimiento</h3>
+    <table>
+      <thead>
+        <tr><th>Discos (n)</th><th>Movimientos (2ⁿ − 1)</th><th>Complejidad</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>1</td><td rowspan="8" style="vertical-align:middle;font-size:1.3rem;font-weight:700;color:#1b5fa8">O(2<sup>n</sup>)</td></tr>
+        <tr><td>2</td><td>3</td></tr>
+        <tr><td>3</td><td>7</td></tr>
+        <tr><td>4</td><td>15</td></tr>
+        <tr><td>5</td><td>31</td></tr>
+        <tr><td>6</td><td>63</td></tr>
+        <tr><td>7</td><td>127</td></tr>
+        <tr><td>8</td><td>255</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.3 Complejidad espacial</h3>
+    <p>
+      El algoritmo usa la pila de llamadas del sistema; la profundidad máxima de recursión es
+      <b>O(n)</b>, lo que determina el espacio adicional utilizado.
+    </p>
+    <div class="callout naranja">
+      El algoritmo tiene complejidad temporal <b>exponencial O(2ⁿ)</b>. Para n grande el número de
+      movimientos crece muy rápido; para n = 64 discos se necesitarían más de 1.8 × 10¹⁹ movimientos.
+    </div>
+  </div>
+
+  <!-- ── 6. Código V.1 ── -->
+  <div class="seccion">
+    <h2>6. Código Fuente <span class="vbadge v1">V.1 — Consola</span></h2>
+
+    <h3>6.1 Explicación</h3>
+    <ul>
+      <li><b>Scanner</b> lee el número de discos desde la entrada estándar.</li>
+      <li>Se valida que el número sea positivo.</li>
+      <li>El método <code>resolverTorresHanoi()</code> implementa la recursividad.</li>
+      <li>La variable estática <code>contadorMovimientos</code> acumula el total de movimientos.</li>
+    </ul>
+
+    <pre>
+<span class="kw">import</span> java.util.Scanner;
+
+<span class="kw">public class</span> <span class="ty">App</span> {
+
+    <span class="kw">private static int</span> contadorMovimientos = <span class="nb">0</span>;
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="ty">String</span>[] args) {
+        <span class="ty">Scanner</span> scanner = <span class="kw">new</span> <span class="ty">Scanner</span>(System.in);
+
+        System.out.<span class="fn">println</span>(<span class="st">"=== TORRES DE HANOI V.1 ==="</span>);
+        System.out.<span class="fn">print</span>(<span class="st">"Ingrese el numero de discos: "</span>);
+
+        <span class="kw">int</span> discos = scanner.<span class="fn">nextInt</span>();
+
+        <span class="kw">if</span> (discos &lt;= <span class="nb">0</span>) {
+            System.out.<span class="fn">println</span>(<span class="st">"El numero de discos debe ser mayor que 0."</span>);
+            scanner.<span class="fn">close</span>();
+            <span class="kw">return</span>;
+        }
+
+        <span class="fn">resolverTorresHanoi</span>(discos, <span class="st">'A'</span>, <span class="st">'C'</span>, <span class="st">'B'</span>);
+        System.out.<span class="fn">println</span>(<span class="st">"Total de movimientos: "</span> + contadorMovimientos);
+
+        scanner.<span class="fn">close</span>();
+    }
+
+    <span class="kw">private static void</span> <span class="fn">resolverTorresHanoi</span>(<span class="kw">int</span> n, <span class="kw">char</span> origen,
+                                          <span class="kw">char</span> destino, <span class="kw">char</span> auxiliar) {
+        <span class="kw">if</span> (n == <span class="nb">1</span>) {
+            contadorMovimientos++;
+            System.out.<span class="fn">println</span>(<span class="st">"Movimiento "</span> + contadorMovimientos
+                + <span class="st">": disco 1 de "</span> + origen + <span class="st">" a "</span> + destino);
+            <span class="kw">return</span>;
+        }
+
+        <span class="fn">resolverTorresHanoi</span>(n - <span class="nb">1</span>, origen, auxiliar, destino); <span class="cm">// paso 1</span>
+
+        contadorMovimientos++;
+        System.out.<span class="fn">println</span>(<span class="st">"Movimiento "</span> + contadorMovimientos
+            + <span class="st">": disco "</span> + n + <span class="st">" de "</span> + origen + <span class="st">" a "</span> + destino); <span class="cm">// paso 2</span>
+
+        <span class="fn">resolverTorresHanoi</span>(n - <span class="nb">1</span>, auxiliar, destino, origen); <span class="cm">// paso 3</span>
+    }
+}
+    </pre>
+
+    <h3>6.2 Salida de ejemplo (3 discos)</h3>
+    <pre>
+=== TORRES DE HANOI V.1 ===
+Ingrese el numero de discos: 3
+Movimiento 1: disco 1 de A a C
+Movimiento 2: disco 2 de A a B
+Movimiento 3: disco 1 de C a B
+Movimiento 4: disco 3 de A a C
+Movimiento 5: disco 1 de B a A
+Movimiento 6: disco 2 de B a C
+Movimiento 7: disco 1 de A a C
+Total de movimientos: 7
+    </pre>
+  </div>
+
+  <!-- ── 7. Descripción V.2 ── -->
+  <div class="seccion">
+    <h2>7. Descripción de la Versión 2 <span class="vbadge v2">V.2 — Interfaz Gráfica</span></h2>
+
+    <h3>7.1 Tecnología utilizada</h3>
+    <p>Java SE con la biblioteca <b>Swing</b> (javax.swing) para la interfaz gráfica y
+    <code>javax.swing.Timer</code> para la animación paso a paso.</p>
+
+    <h3>7.2 Componentes de la interfaz</h3>
+    <table>
+      <thead><tr><th>Componente</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>JFrame</td><td>Ventana principal (980 × 640 px)</td></tr>
+        <tr><td>JSpinner</td><td>Selector de número de discos (3 – 8)</td></tr>
+        <tr><td>JButton "Resolver"</td><td>Genera todos los movimientos e inicia la animación</td></tr>
+        <tr><td>JButton "Reiniciar"</td><td>Restablece el estado inicial</td></tr>
+        <tr><td>JLabel (status)</td><td>Muestra el progreso: movimiento actual / total</td></tr>
+        <tr><td>HanoiPanel (JPanel)</td><td>Panel personalizado dibuja torres y discos con colores</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.3 Características visuales</h3>
+    <ul>
+      <li>Fondo con degradado azul claro.</li>
+      <li>Torres dibujadas con <code>Graphics2D.fillRoundRect()</code>.</li>
+      <li>Cada disco tiene un color único tomado de una paleta de 8 colores.</li>
+      <li>Anti-aliasing activado para bordes suaves.</li>
+      <li>Animación controlada por <code>Timer</code> (500 ms por paso).</li>
+      <li>Diálogo final con el resumen de movimientos.</li>
+    </ul>
+
+    <h3>7.4 Diagrama de clases simplificado</h3>
+    <pre>
+┌─────────────┐           ┌────────────────────┐
+│    App      │ crea ───▶ │   HanoiFrame       │
+│  (main)     │           │ ─────────────────  │
+└─────────────┘           │ + hanoiPanel       │
+                          │ + discosSpinner    │
+                          │ + resolverBtn      │
+                          │ + reiniciarBtn     │
+                          │ + animacionTimer   │
+                          │ + movimientos[]    │
+                          │ ─────────────────  │
+                          │ + iniciarRes()     │
+                          │ + reiniciarJuego() │
+                          └────────┬───────────┘
+                                   │ contiene
+                          ┌────────▼───────────┐
+                          │   HanoiPanel       │
+                          │ ─────────────────  │
+                          │ + torres[3]        │
+                          │ + numeroDiscos     │
+                          │ ─────────────────  │
+                          │ + reiniciar(n)     │
+                          │ + moverDisco(o,d)  │
+                          │ + paintComponent() │
+                          └────────────────────┘
+    </pre>
+
+    <div class="callout verde">
+      La V.2 mantiene exactamente el mismo algoritmo recursivo de la V.1; solo añade la capa gráfica
+      para visualizar cada movimiento de forma animada.
+    </div>
+  </div>
+
+  <!-- ── 8. Comparativa ── -->
+  <div class="seccion">
+    <h2>8. Comparativa V.1 vs V.2</h2>
+    <table>
+      <thead><tr><th>Característica</th><th>V.1 – Consola</th><th>V.2 – Interfaz Gráfica</th></tr></thead>
+      <tbody>
+        <tr><td>Entrada de usuario</td><td>Teclado (Scanner)</td><td>JSpinner con botones</td></tr>
+        <tr><td>Salida</td><td>Texto en consola</td><td>Animación gráfica en ventana</td></tr>
+        <tr><td>Visualización de torres</td><td>No</td><td>Sí (discos de colores)</td></tr>
+        <tr><td>Animación paso a paso</td><td>No</td><td>Sí (Timer 500 ms)</td></tr>
+        <tr><td>Algoritmo recursivo</td><td>Sí</td><td>Sí (mismo algoritmo)</td></tr>
+        <tr><td>Contador de movimientos</td><td>Sí (texto)</td><td>Sí (label dinámico)</td></tr>
+        <tr><td>Máx. discos recomendados</td><td>Ilimitado (imprime en texto)</td><td>8 (visual, fluido)</td></tr>
+        <tr><td>Líneas de código</td><td>~40</td><td>~260</td></tr>
+        <tr><td>Dependencias externas</td><td>Ninguna</td><td>Java Swing (incluido en JDK)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 9. Conclusiones ── -->
+  <div class="seccion">
+    <h2>9. Conclusiones</h2>
+    <ul>
+      <li>
+        El problema de las Torres de Hanoi es un ejemplo perfecto de cómo la <b>recursividad</b>
+        permite resolver problemas complejos con código conciso y elegante.
+      </li>
+      <li>
+        La solución tiene complejidad <b>exponencial O(2ⁿ)</b>, lo que la hace inviable para un
+        número grande de discos, pero óptima en términos de número mínimo de movimientos.
+      </li>
+      <li>
+        La separación entre la lógica (algoritmo) y la presentación (interfaz gráfica) demostró la
+        importancia del principio de <b>separación de responsabilidades</b>: el mismo método
+        recursivo funciona igual en ambas versiones.
+      </li>
+      <li>
+        La interfaz gráfica en Swing mejora significativamente la comprensión del algoritmo al
+        visualizar cada movimiento de disco en tiempo real.
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── 10. Instrucciones de ejecución ── -->
+  <div class="seccion">
+    <h2>10. Instrucciones de Compilación y Ejecución</h2>
+    <pre>
+<span class="cm"># Compilar (desde la raíz del proyecto)</span>
+javac -d bin src/App.java
+
+<span class="cm"># Ejecutar V.1 (consola)</span>
+java -cp bin App
+
+<span class="cm"># Ejecutar V.2 (GUI — solo requiere un entorno gráfico)</span>
+java -cp bin App
+    </pre>
+    <div class="callout">
+      Requiere <b>Java SE 11+</b>. Para la V.2 es necesario un entorno de escritorio (X11 / Windows / macOS).
+    </div>
+  </div>
+
+  <!-- ── 11. Referencias ── -->
+  <div class="seccion">
+    <h2>11. Referencias</h2>
+    <ul>
+      <li>Lucas, É. (1883). <em>Récréations Mathématiques</em>. Gauthier-Villars, Paris.</li>
+      <li>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2009).
+          <em>Introduction to Algorithms</em> (3ª ed.). MIT Press.</li>
+      <li>Oracle. (2023). <em>Java Platform SE Documentation</em>. https://docs.oracle.com/javase/</li>
+      <li>Oracle. (2023). <em>Creating a GUI With Swing</em>. Oracle Java Tutorials.</li>
+    </ul>
+  </div>
+
+</div><!-- fin contenido -->
+
+<div class="footer">
+  Torres de Hanoi – V.1 &amp; V.2 &nbsp;|&nbsp; Programación Java &nbsp;|&nbsp; 16 de marzo de 2026
+</div>
+
+</body>
+</html>
