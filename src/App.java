@@ -4,7 +4,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        int numDiscos = 3;
+        int numDiscos = 5;
 
         Torre torre1 = new Torre();
         Torre torre2 = new Torre();
@@ -21,8 +21,14 @@ public class App {
             torre3
         );
 
-        System.out.println("=== TORRES DE HANOI BFS ===");
-        System.out.println("Número de discos: " + numDiscos);
+        System.out.println("==================================");
+        System.out.println("     TORRES DE HANOI - BFS");
+        System.out.println("==================================");
+
+        System.out.println(
+            "Número de discos: " +
+            numDiscos
+        );
 
         List<String> solucion =
             resolverHanoi(
@@ -32,7 +38,17 @@ public class App {
 
         if (solucion != null) {
 
-            System.out.println("\n=== SOLUCIÓN FINAL ===");
+            System.out.println(
+                "\n=================================="
+            );
+
+            System.out.println(
+                "         SOLUCIÓN FINAL"
+            );
+
+            System.out.println(
+                "=================================="
+            );
 
             int paso = 0;
 
@@ -78,6 +94,11 @@ public class App {
 
         int nivel = 0;
 
+        int nodosExplorados = 0;
+
+        long inicio =
+            System.currentTimeMillis();
+
         while (
             !cola.isEmpty() &&
             estadoFinal == null
@@ -87,7 +108,7 @@ public class App {
                 cola.size();
 
             System.out.println(
-                "\n=============================="
+                "\n=================================="
             );
 
             System.out.println(
@@ -95,7 +116,12 @@ public class App {
             );
 
             System.out.println(
-                "=============================="
+                "Nodos en este nivel: " +
+                tamañoNivel
+            );
+
+            System.out.println(
+                "=================================="
             );
 
             for (
@@ -107,11 +133,15 @@ public class App {
                 Estado actual =
                     cola.poll();
 
+                nodosExplorados++;
+
                 System.out.println(
                     "\nExplorando nodo:"
                 );
 
-                System.out.println(actual);
+                System.out.println(
+                    actual.generarclave()
+                );
 
                 if (
                     actual.movimiento != null
@@ -168,16 +198,43 @@ public class App {
                             "   └── " +
                             siguiente.movimiento
                         );
-
-                        System.out.println(
-                            siguiente
-                        );
                     }
                 }
             }
 
             nivel++;
         }
+
+        long fin =
+            System.currentTimeMillis();
+
+        System.out.println(
+            "\n=================================="
+        );
+
+        System.out.println(
+            "        ESTADÍSTICAS BFS"
+        );
+
+        System.out.println(
+            "=================================="
+        );
+
+        System.out.println(
+            "Nodos explorados: " +
+            nodosExplorados
+        );
+
+        System.out.println(
+            "Niveles recorridos: " +
+            nivel
+        );
+
+        System.out.println(
+            "Tiempo de ejecución: " +
+            (fin - inicio) +
+            " ms"
+        );
 
         if (estadoFinal != null) {
 
@@ -237,7 +294,7 @@ public class App {
         return contador;
     }
 
-    // Generar estados hijos
+    // Generar hijos
     private static List<Estado>
     generarEstadosSiguientes(
         Estado estadoActual
@@ -322,7 +379,7 @@ public class App {
             torresClonadas[destino]
             .getTope();
 
-        // Validar regla Hanoi
+        // Regla Hanoi
         if (
             topeDestino != null &&
             disco.getValor() >
@@ -359,7 +416,7 @@ public class App {
         return nuevoEstado;
     }
 
-    // Reconstruir solución
+    // Reconstruir camino
     private static List<String>
     reconstruirCamino(
         Estado estadoFinal
