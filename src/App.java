@@ -4,7 +4,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        int numDiscos = 5;
+        int numDiscos = 8;
 
         Torre torre1 = new Torre();
         Torre torre2 = new Torre();
